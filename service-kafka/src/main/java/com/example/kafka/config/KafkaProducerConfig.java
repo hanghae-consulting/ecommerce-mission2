@@ -20,25 +20,25 @@ import java.util.List;
 public class KafkaProducerConfig {
     @Bean
     public ProducerFactory<String, Event> producerFactory(){
-        HashMap<String, Object> config = new HashMap<>();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:10000");
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        config.put("schema.registry.url", "http://localhost:9001");
-        return new DefaultKafkaProducerFactory<>(config);
+        // TODO #1: Kafka Producer Factory를 생성하는 메서드를 구현하세요.
+        // 요구사항:
+        // - Kafka 서버의 bootstrap 설정을 구성해야 합니다.
+        // - StringSerializer와 KafkaAvroSerializer를 사용하여 메시지를 직렬화해야 합니다.
+        // - Schema Registry를 설정하여 Avro 메시지를 사용할 수 있도록 해야 합니다.
     }
 
     @Bean
     public KafkaTemplate<String, Event> kafkaTemplate(){
-        return new KafkaTemplate<>(producerFactory());
+        // TODO #2: KafkaTemplate을 생성하는 메서드를 구현하세요.
+        // 요구사항:
+        // - producerFactory를 사용하여 KafkaTemplate을 생성해야 합니다.
     }
 
     @Bean
     public List<NewTopic> defaultTopic() {
-        return List.of(
-            new NewTopic("topic", 1, (short) 1),
-            new NewTopic("topic-a", 1, (short) 1),
-            new NewTopic("topic-b", 1, (short) 1)
-        );
+        // TODO #3: 기본 Kafka 토픽을 생성하는 메서드를 구현하세요.
+        // 요구사항:
+        // - 최소 하나의 기본 토픽을 생성해야 합니다.
+        // - 토픽의 파티션 수와 복제 계수를 설정해야 합니다.
     }
 }

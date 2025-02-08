@@ -1,6 +1,7 @@
 package com.example.products;
 
 import com.github.benmanes.caffeine.cache.Cache;
+lombok.RequiredArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,70 +16,37 @@ import java.util.concurrent.TimeUnit;
 public class ProductService {
 
     private static final Logger log = LoggerFactory.getLogger(ProductService.class);
-    private final Cache<String, Object> localCache;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ProductRepository productRepository;
     private static final String PRODUCT_KEY_PREFIX = "product:";
 
     public Product saveProduct(Product product) {
-        Product savedProduct = productRepository.save(product);
-        String redisKey = PRODUCT_KEY_PREFIX + savedProduct.getId();
-        redisTemplate.opsForValue().set(redisKey, product, 1, TimeUnit.HOURS);
-        localCache.put(redisKey, savedProduct);
-        System.out.println("Saved product: " + redisKey);
-        return savedProduct;
+        // TODO #1: 상품을 저장하는 메서드를 구현하세요.
+        // 요구사항:
+        // - 상품을 저장하고 반환해야 합니다.
+        // - 저장 후 Redis 캐시에 1시간 동안 유지해야 합니다.
     }
 
-
     public Optional<Product> getProduct(Long id) {
-        String redisKey = PRODUCT_KEY_PREFIX + id;
-
-        Product product = (Product) localCache.getIfPresent(redisKey);
-        if (product != null){
-            System.out.println("Local Cache hit for product: " + redisKey);
-            return Optional.of(product);
-        }
-
-        product = (Product) redisTemplate.opsForValue().get(redisKey);
-        if (product != null) {
-            localCache.put(redisKey, product);
-            System.out.println("Cache hit");
-            return Optional.of(product);
-        }
-
-        Optional<Product> dbProduct = productRepository.findById(id);
-        dbProduct.ifPresent(p -> {
-            log.info("Cache hit for product: " + p.getId());
-            localCache.put(redisKey, p);
-            redisTemplate.opsForValue().set(redisKey, p);
-        });
-
-        return dbProduct;
+        // TODO #2: 상품을 조회하는 메서드를 구현하세요.
+        // 요구사항:
+        // - Redis 캐시에서 상품을 먼저 조회해야 합니다.
+        // - 캐시에 없을 경우 데이터베이스에서 조회하고 캐시에 저장해야 합니다.
     }
 
     public Product updateProduct(Long id, Product updatedProduct) {
-        if (!productRepository.existsById(id)){
-            throw new IllegalArgumentException("Product not found for id: " + id);
-        }
-
-        updatedProduct.setId(id);
-        Product savedProduct = productRepository.save(updatedProduct);
-        String redisKey = PRODUCT_KEY_PREFIX + savedProduct.getId();
-
-        redisTemplate.opsForValue().set(redisKey, savedProduct);
-        redisTemplate.convertAndSend("cache-sync", "Updated product-" + redisKey);
-        return savedProduct;
+        // TODO #3: 상품 정보를 업데이트하는 메서드를 구현하세요.
+        // 요구사항:
+        // - 기존 상품이 존재하는지 확인해야 합니다.
+        // - 존재하는 경우 데이터를 업데이트해야 합니다.
+        // - 업데이트된 데이터를 Redis 캐시에도 반영해야 합니다.
     }
 
     public void deleteProduct(Long id) {
-        if (!productRepository.existsById(id)){
-            throw new IllegalArgumentException("Product not found for id: " + id);
-        }
-
-        productRepository.deleteById(id);
-        String productId = id.toString();
-        String redisKey = PRODUCT_KEY_PREFIX + productId;
-
-        redisTemplate.convertAndSend("cache-sync", "Deleted product-" + redisKey);
+        // TODO #4: 상품을 삭제하는 메서드를 구현하세요.
+        // 요구사항:
+        // - 상품이 존재하는지 확인해야 합니다.
+        // - 존재하는 경우 데이터베이스에서 삭제해야 합니다.
+        // - Redis 캐시에서도 제거해야 합니다.
     }
 }

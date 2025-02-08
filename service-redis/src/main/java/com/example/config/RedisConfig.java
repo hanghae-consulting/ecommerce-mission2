@@ -16,35 +16,17 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 public class RedisConfig {
     @Bean
     public LettuceConnectionFactory redisConnectionFactory(){
-        return new LettuceConnectionFactory(new RedisClusterConfiguration()
-                .clusterNode("localhost", 7001)
-                .clusterNode("localhost", 7002)
-                .clusterNode("localhost", 7003)
-                .clusterNode("localhost", 7004)
-                .clusterNode("localhost", 7005)
-                .clusterNode("localhost", 7006)
-        );
+        // TODO #1: Redis 클러스터 연결을 위한 ConnectionFactory를 생성하세요.
+        // 요구사항:
+        // - Redis 클러스터 구성을 사용해야 합니다.
+        // - 클러스터 노드 정보를 설정해야 합니다.
     }
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory redisConnectionFactory){
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory);
-        return redisTemplate;
-    }
-
-    @Bean
-    public RedisMessageListenerContainer listenerContainer(
-            LettuceConnectionFactory redisConnectionFactory,
-            MessageListenerAdapter messageListenerAdapter
-    ) {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(redisConnectionFactory);
-        container.addMessageListener(messageListenerAdapter, new PatternTopic("cache-sync"));
-        return container;
-    }
-
-    @Bean MessageListenerAdapter messageListenerAdapter(CacheSubscriber subscriber){
-        return new MessageListenerAdapter(subscriber);
+        // TODO #2: RedisTemplate을 생성하여 Redis에 데이터를 저장하고 가져오는 기능을 구현하세요.
+        // 요구사항:
+        // - 주어진 ConnectionFactory를 사용해야 합니다.
+        // - Redis에 데이터를 직렬화 및 역직렬화할 수 있어야 합니다.
     }
 }
